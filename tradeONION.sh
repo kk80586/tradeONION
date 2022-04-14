@@ -62,6 +62,7 @@ ENDPOINT2=https://stakecube.io/api/v2/
 ENDPOINT3=https://www.citex.co.kr/api/v2/
 ENDPOINT4=https://www.southxchange.com/api/v4/
 ENDPOINT=$ENDPOINT1
+read -p "Which market would you like [$ENDPOINT1]:" ENDPOINT ; ENDPOINT=${ENDPOINT:-$ENDPOINT1}
 # endpoints Public API    ( All are method (GET) )
 MARKETS=markets           # Retrieve a listing of all markets and basic information including current price, volume, high, low, bid and ask.
 # /orders/{market}   # Retrieve the current order book for {market} such as BTC-ONION.
