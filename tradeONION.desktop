@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=/home/ShellOgreONION-master/shellogreONION.sh
+GenericName[en_US]=
+GenericName=
+Icon=/home/ShellOgreONION-master/menuv1_20220411_220546.png
+MimeType=
+Name[en_US]=ShellOgreONION
+Name=ShellOgreONION
+Path=
+StartupNotify=true
+Terminal=true
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=none
+X-KDE-SubstituteUID=false
+X-KDE-Username=
