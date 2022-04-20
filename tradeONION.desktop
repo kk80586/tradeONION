@@ -1,13 +1,13 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/home/ShellOgreONION-master/shellogreONION.sh
+Exec=/home/tradeONION-main/tradeONION.sh
 GenericName[en_US]=
 GenericName=
-Icon=/home/ShellOgreONION-master/menuv1_20220411_220546.png
+Icon=/home/tradeONION-main/menuv1_20220411_220546.png
 MimeType=
-Name[en_US]=ShellOgreONION
-Name=ShellOgreONION
+Name[en_US]=tradeONION
+Name=tradeONION
 Path=
 StartupNotify=true
 Terminal=true
