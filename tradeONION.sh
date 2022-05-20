@@ -1,8 +1,10 @@
 #!/bin/bash
-CURRVER=1.0.1
+CURRVER=1.1.0
+#cd "${0%/*}"
 # 
 # WARNING: Buy and Sell ONLY show ONION price (not bid or ask)
-# This software is not associated with nor endorsed by DeepOnion© or TradeOgre© who shall be held harmless for use or misuse of this product.
+# This software is not associated with nor endorsed by DeepOnion©, TradeOgre© or StakeCube©  who shall be held harmless for use or misuse of this product.
+# Other names of companies or products listed in this script are copyright of their respective owners and shall also be held harmless.
 # This SOFTWARE PRODUCT is provided by THE PROVIDER "as is" and "with all faults." THE PROVIDER makes no representations or warranties of any kind 
 # concerning the safety, suitability, lack of viruses, inaccuracies, typographical errors, or other harmful components of this SOFTWARE PRODUCT. 
 # There are inherent dangers in the use of any software, and you are solely responsible for determining whether this SOFTWARE PRODUCT is compatible 
@@ -16,7 +18,11 @@ CURRVER=1.0.1
 # line with a colon ":" between them.                                        # 
 # Do not hit enter at the end of the line.                                   # 
 # Example:                                                                   #
-# ac67d2345:1d742a34c9  (they will be much longer)                           #
+# ac67d2345:1d742a34c9  (they will be much longer)
+# 
+#
+#
+#
 #                                                                            #
 # You will need to have curl and jq available. Please let me know if your    #
 # system asks for anything else.                                             #
@@ -35,10 +41,13 @@ CURRVER=1.0.1
 # TODO:
 # Too much to waste time writing up a TODO list right now :P
 #
+# Reduce code via functions.
 # Complete converting script to dynamic. 
 # Complete [default] inputs. 
 # Learn at least enough jq to pretty up the output.
+# SC Ticker - convert scientific e notation to float.
 # Convert all calls to TradeOgre.
+# Update comments/docs
 #  
 ##############################################################################
 ################################  API info  ################################## 
@@ -52,52 +61,21 @@ CURRVER=1.0.1
 # KEY=
 # SECRET=
 #
-ksvalue1=`cat shellogreks.txt`
-ksvalue2=`cat scks.txt`
-ksvalue3=`cat scks2.txt`
-ksvalue4=`cat scitcoks.txt`
-ksvalue5=`cat sxchangeks.txt`
+ksvalue1=`cat shellogreks.txt`   # TradeOgre KEY:SECRET
+ksvalue2=`cat scks.txt`          # StakeCube KEY
+ksvalue3=`cat scks2.txt`         # StakeCube SECRET
+ksvalue4=`cat scitcoks.txt`      # Citex
+ksvalue5=`cat sxchangeks.txt`    # SouthXchange
 ksvalue=$ksvalue1
 #    echo $ksvalue
-#
-# HMAC
-#echo -n "password" | openssl sha256 -hmac "nonbase64key"
-#echo -n "value" | openssl sha1 -hmac "key"
-#
 #######################
-#                  ######## ENDPOINTS #########
+###          ######## ENDPOINTS #########
 ENDPOINT1="https://tradeogre.com/api/v1/"
 ENDPOINT2="https://stakecube.io/api/v2/"
 ENDPOINT3="https://www.citex.co.kr/api/v2/"
 ENDPOINT4="https://www.southxchange.com/api/v4/"
 ENDPOINT=$ENDPOINT1
-#echo -e '\E[33;40m'"\033[1m"
-#echo "[default] TradeOgre = 1 "
-#echo "StakeCube           = 2 "
-#echo "Citex               = 3 "
-#echo "SouthXchange        = 4 "
-#
-#read -p "Your choice (1 to 4): " choice
-#
-#  # case code
-#  case $choice in
-#          1)      ENDPOINT=$ENDPOINT1
-#                  ;;
-#          2)      ENDPOINT=$ENDPOINT2
-#                  ;;
-#          3)      ENDPOINT=$ENDPOINT3
-#                  ;;
-#          4)      ENDPOINT=$ENDPOINT4
-#                  ;;
-#          *)      echo "Invalid selection"
-#                  exit
-#                  ;;
-#  esac
 
-#read -p "Which market would you like [$ENDPOINT1]:" ENDPOINT ; ENDPOINT=${ENDPOINT:-$ENDPOINT1}
-# endpoints Public API    ( All are method (GET) )
-# nonce1=date +%s
-# date +%s%N | cut -b1-13 # = milliseconds
 #
 MARKETS=markets           # Retrieve a listing of all markets and basic information including current price, volume, high, low, bid and ask.
 # /orders/{market}   # Retrieve the current order book for {market} such as BTC-ONION.
@@ -116,11 +94,18 @@ TICKER=ticker/              #
 MYBALANCE=account/balance   # Fields= currency . Get the balance of a specific currency for you account. The currency field is required, such as ONION.
 # /account/order/{uuid}     # Retrieve information about a specific order by the uuid of the order.
 MYBALANCES=account/balances # Retrieve all balances for your account.
-#CURRVER=1.0.0
-#
+############################################################################
 # StakeCube
-EXCHSPOTEP=exchange/spot/
-# 
+EXCHSPOTEP='exchange/spot/myOrderHistory?'
+EXCHSPOTORDERQEP='exchange/spot/order?'
+AMPSIDEEQ='\&side='
+AMPPRICEEQ='\&price='
+AMPMARKETEQ='\&market='
+AMPAMOUNTEQ='\&amount='
+SIDEEQ='side='
+PRICEEQ='price='
+AMOUNTEQ='amount='
+#
 # 
 # 
 # params
@@ -128,30 +113,48 @@ EXCHSPOTEP=exchange/spot/
 TRADESMKT=trades/
 MYTRADES='myTrades?'
 MARKETEQ='market='
+urlenc='-H "Content-Type: application/x-www-form-urlencoded"'
+
 ############################################################################# 
 #######   StakeCube endpoints ###############################################
 #############################################################################
 # ENDPOINT2="https://stakecube.io/api/v2/"
 ##   ##################  PUBLIC  #############
-#  exchange/spot/arbitrageInfo?ticker=SCC
+#  exchange/spot/arbitrageInfo?ticker=ONION
 #
 #  exchange/spot/markets?baseMarket=BTC&orderBy=volume 
 #            Parameter	      Description	            Example
 #            ---------        -----------               -------
-# (optional) market	       specific market pair	        SCC_BTC
+# (optional) market	       specific market pair	        ONION_BTC
 # (optional) baseMarket	   specific base market	        BTC
-# (optional) category	   specific category	        BTC, SCC, ALTS, STABLE
+# (optional) category	   specific category	        BTC, ONION, ALTS, STABLE
 # (optional) orderBy	   the list's ordering	        volume  or change
 # (optional) orderData	   include order information	true or false
 # (optional) priceHistory  include price history	    true or false'
 #
+#  ORDER
+#            Parameter	      Description	              Example
+#            ---------        ------------                -------
+# (required) market	the    chosen market pair	          ONION_BTC
+# (required) side	the    market side to place the order BUY or SELL
+# (required) price	the    price in the Base coin	      0.00010000 (BTC)
+# (required) amount	the    amount in the Market coin	  10 (ONION)
+# (required) nonce	the    incremental integer	          UNIX Timestamp
+# (required) signature	   the parameter's HMAC signature HEX Format
+
+#Note: The side must be in full caps, e.g: BUY or SELL, not buy or sell.
+
+#Example: POST https://stakecube.io/api/v2/exchange/spot/order
+
+#POST Body: market=ONION_BTC&side=BUY&price=0.00010000&amount=10&nonce=123&signature=xxx
+# 
+# 
 #
 #
 #
 #
 #
-#
-#######################
+##############################################
 #                  ######## VARIABLES ########  
 # COINV=              # Coin Choice
 # coin_choice=        # The coin you want to buy, sell, etc.
@@ -184,9 +187,7 @@ MARKETEQ='market='
 #
 ## Print selection menu.
 clear
-echo
 echo $ENDPOINT
-
 showMenu(){
 echo -e '\E[32;40m'"\033[1m"
 unset market ; unset quantity ; unset price 
@@ -210,19 +211,12 @@ unset market ; unset quantity ; unset price
   echo "[14] Choose an Exchange"
   echo "[15] StakeCube Testing"
   echo "===================================="
-  
   printf "\n"
   
-# read -p "Please Select A Number: " mc
-# if [[ -z $mc ]]; then echo "Please enter a valid option..."; read mc 
-# else return $mc
-# fi
- # return $mc
-    
   read -p "Please Select A Number: " mc
   return $mc
   
-}
+           }
 
 ## 
 while [[ "$m" != "0" ]]
@@ -248,10 +242,9 @@ do
     --user $ksvalue \
     --form currency=$COINV | jq '.available' | tr '"' ' '
     echo -e '\E[32;40m'"\033[1m"
+    
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
-    
-    
-    
+  
     
     
     echo "StakeCube"
@@ -260,12 +253,16 @@ do
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
     
+    
+       
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "SouthX"
     
     
+      
     fi
     printf "\n"
+#####  22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
     elif [[ "$m" == "2" ]]; then
     ## Get All Balances.
     
@@ -279,14 +276,10 @@ do
     echo -e '\E[32;40m'"\033[1m"
     
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
-    
-    
-    
-    
+   
     
     echo "StakeCube"
-    
-    
+      
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
     
@@ -296,7 +289,8 @@ do
     
     fi
     
-    printf "\n"    
+    printf "\n" 
+#####  33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333    
     elif [[ "$m" == "3" ]]; then
     ## Buy ONION with BTC
 
@@ -358,26 +352,118 @@ do
     --form market=$market \
     --form quantity=$quantity \
     --form price=$price         #  | tee -a $log_file
-    
+ 
+ ######################################################
+ 
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
+    ## Buy ONION with BTC
+    
+    BTCONION=$(curl -s --request GET \
+    --url https://tradeogre.com/api/v1/ticker/BTC-ONION | jq '.price' | tr -d '"')
+  
+    CURRENTBTC=$(curl -s --request POST \
+    --url https://tradeogre.com/api/v1/account/balance \
+    --user $ksvalue \
+    --form currency=BTC | jq '.available' | tr -d '"')
+    BTCBTC=$(curl -s https://api-pub.bitfinex.com/v2/ticker/tBTCUSD | awk -F',' '{print  $7}')
+    ONIONUSD=$(echo $BTCBTC*$BTCONION | bc)
+    echo "| If you are going to bid less than the ONION Price       |"
+    echo "| you will need to buy more than the minimum quantity.    |"
+    echo "| If you get an error 'Quantity must be at least 0.00002' |"
+    echo "| then increase quantity or bid higher price.             |"
+    echo -e '\E[31;40m'"\033[1m" " WARNING: Displayed Buy price default is price, not bid or ask."
+    echo " Use ticker. Will be fixed in next version.";echo -e '\E[32;40m'"\033[1m"
+    echo Current ONION Price is: 1 ONION = "$BTCONION" BTC /  $ONIONUSD USD. &&
+    echo Your current BTC balance is $CURRENTBTC BTC. 1 BTC = $BTCBTC
+    buybtconion="BTC-ONION"
+    skey1=$ksvalue2 
+    skey2=$ksvalue3
+    echo $skey2
+    while true; do
+    read -p "Is this a BUY or SELL order (use UPPERCASE) [BUY]:" side1 ; side1=${side1:-BUY}
+    side1=${side1^^}
+    side2=${side1^^}
+    read -p "Which market would you like [ONION_BTC]:" market ; market=${market:-ONION_BTC}
+    minquantity=$(echo 0.00002000/$BTCONION | bc)
+    echo "Minimum quantity of ONION is : " $minquantity
+    read -p "Enter quantity desired [$minquantity]: " quantity ; quantity=${quantity:-$minquantity} 
+    read -p "Enter price bid per Base coin (default= current BUY price) [$BTCONION] : " price ; price=${price:-$BTCONION}
+    
+    echo -e '\E[33;40m'"\033[1m"
+    echo "This is a "${side1^^}" order."
+    echo "You entered (read carefully):"
+    echo "market= " $market
+    echo "quantity= " $quantity
+    echo "price= " $price
+    echo
+    read -p "Are the above values what you wanted ?" yn
+    echo -e '\E[32;40m'"\033[1m"
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) continue;;
+        * ) echo "Please answer yes or no.";;
+    esac
+  done
+    while true; do
+     echo -e '\E[31;40m'"\033[1m"
+   read -p "Would you like to execute this transaction?" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exec $0;;
+        * ) echo "Please answer yes or no.";;
+    esac
+  done  
+   echo -e '\E[32;40m'"\033[1m"
     
     
-    
-    
-    
-    echo "StakeCube"
-    
-    
+    nonce1=$(date +%s%N | cut -b1-13)
+    nonce3='nonce='
+    marketv=$market
+    signature1="\&signature=" 
+    skey1=$ksvalue2 
+    skey2="$ksvalue3"
+    xapi='-H "X-API-KEY: '
+    xapi1=$skey1\"
+    xapikey="$xapi$xapi1"
+    echo '"xapikey"' $xapikey
+    skey3=\"${skey2}\"  
+    echo "skey3" $skey3
+    HMAC1="-hmac "
+    echo "HMAC1" $HMAC1
+    HMAC=$HMAC1$skey2
+    echo "HMAC" $HMAC
+    MYORDERHIST="myOrderHistory\?"
+    urlenc='"Content-Type: application/x-www-form-urlencoded"'
+
+urleq="https://stakecube.io/api/v2/exchange/spot/order"
+#body1="market=ONION_BTC&side=SELL&price=0.00099969&amount=100&nonce=$nonce1"
+signature3=$(printf "market=$marketv&side=$side1&price=$price&amount=$quantity&nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
+
+    (curl -s --request POST \
+    --url $urleq \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -H "X-API-KEY: $skey1" \
+    --data market=$market \
+    --data side=$side1 \
+    --data price=$price \
+    --data amount=$quantity \
+    --data nonce=$nonce1 \
+    --data signature=$signature3 | jq )
+
+    printf "\n"
+###########################################################    
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
     
+    printf "\n"
+###########################################################
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "SouthX"
     
+     printf "\n"
     
     fi
-    
-    printf "\n"
+#####  4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444    
     elif [[ "$m" == "4" ]]; then
     ## Buy BTC with ONION
 
@@ -450,14 +536,11 @@ do
     echo -e '\E[32;40m'"\033[1m"
     
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
-    
-    
-    
-    
-    
+    echo -e '\E[33;40m'"\033[1m"
+    echo "Please use option \"3\" and choose \"SELL\" for order type."
+    echo -e '\E[32;40m'"\033[1m"
     echo "StakeCube"
-    
-    
+    printf "\n"
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
     
@@ -466,7 +549,7 @@ do
     
     
     fi
-    
+##### 555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555
     printf "\n"
     elif [[ "$m" == "5" ]]; then
     ## Cancel Order
@@ -479,26 +562,79 @@ do
     --user $ksvalue \
     --url $ENDPOINT$CANCEL  \
     --form uuid=$uuid
-    
+##############################################################    
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
+    nonce1=$(date +%s%N | cut -b1-13) 
+    signature1='&signature='
+    cancel1='cancel?'
+    nonce2='&nonce='
+    skey1=$ksvalue2
+    skey2=$ksvalue3
+    xapi="'X-API-KEY: "
+    xapi1=$skey1\'
+    xapikey=\"$xapi$xapi1\"
+   # skey2=\"${skey2}\"\'  
+    HMAC1="-hmac "
+    HMAC=$HMAC1$skey2
+        
+    echo "Type cancel to cancel all orders in specified market pair"
+    read -p "Enter the Order # " orderIDnum
+    echo "$orderIDnum" "$cancelv"
+    if [[ "$orderIDnum" == "$cancelv" ]]
+    then 
+    echo -e '\E[31;40m'"\033[1m"
+    echo "!! WARNING - ALL active orders in the market pair you select will be CANCELLED !!"
+    echo $orderIDnum
+    echo -e '\E[32;40m'"\033[1m"
+    read -p "Which market would you like to cancel [ONION_BTC]:" market ; market=${market:-ONION_BTC}
+    echo "cancel all"
+        
+    urleq="https://stakecube.io/api/v2/exchange/spot/cancelAll"
+    signature3=$(printf "market=$market&nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
     
-    
-    
-    
-    
+    (curl -s --request POST \
+    --url $urleq \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -H "X-API-KEY: $skey1" \
+    --data market=$market \
+    --data nonce=$nonce1 \
+    --data signature=$signature3 | jq )
+      
+   else
+    urleq="https://stakecube.io/api/v2/exchange/spot/cancel"
+    signature3=$(printf "orderId=$orderIDnum&nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
+   
+    (curl -s --request POST \
+    --url $urleq \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -H "X-API-KEY: $skey1" \
+    --data orderId=$orderIDnum \
+    --data nonce=$nonce1 \
+    --data signature=$signature3 | jq )
+   fi
+       
+           
     echo "StakeCube"
     
-    
+#####################################################################
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
+    
+    
+    
+    
+    
     
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "SouthX"
     
     
+    
+    
     fi
         
     printf "\n"
+#####  666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
     elif [[ "$m" == "6" ]]; then
     ## Dispay Order Book
     
@@ -534,13 +670,14 @@ do
     fi
     
     printf "\n"
-    
+  #####  77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777 
     elif [[ "$m" == "7" ]]; then
     ## Get My Market Orders
     
     if [[ "$ENDPOINT" == "$ENDPOINT1" ]]; then
     unset market
     echo "Type <all> for all Markets."
+    echo $ksvalue
     read -p "Enter Market [BTC-ONION]:" market ; market=${market:-BTC-ONION}
     echo -e '\E[33;40m'"\033[1m"
     if [[ $market == all ]]; then
@@ -554,26 +691,40 @@ do
     --form market=$market | jq . | tr -d '"[],{}')
     fi
     echo -e '\E[33;40m'"\033[1m"
-    
+
+####################################################################    
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
+    nonce1=$(date +%s%N | cut -b1-13)
+    market=ONION_BTC
+    # limit1='&limit=100&nonce='
+    signature1='&signature='
+    skey1=$ksvalue2
+    skey2=$ksvalue3
+    # read -p "Enter Market [ONION_BTC]:" market ; market=${market:-ONION_BTC}
     
-    
-    
-    
-    
-    echo "StakeCube"
-    
-    
+    urleq="https://stakecube.io/api/v2/exchange/spot/myOpenOrder"
+    signature3=$(printf "nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
+       
+    (curl -v --request GET \
+    --url https://stakecube.io/api/v2/exchange/spot/myOpenOrder?nonce=$nonce1\&signature=$signature3 \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -H "X-API-KEY: $skey1" | jq )
+    #--data nonce=$nonce1 \
+    #--data signature=$signature3 | jq )
+       
+   printf "\n" 
+####################################################################    
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
     echo "Citex"
     
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "SouthX"
-    
+    # 3869475
     
     fi
     
     printf "\n"
+#####  88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
     elif [[ "$m" == "8" ]]; then
     ## Market Ticker
     
@@ -584,10 +735,9 @@ do
     --url $ENDPOINT$TICKER$market
     
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
-    
-    
-    curl -s --request GET \
-    https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION
+       
+    (curl -s --request GET \
+    https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq )
     
     
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
@@ -601,7 +751,7 @@ do
     
     printf "\n"
     printf "\n"
-        
+#####  999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     elif [[ "$m" == "9" ]]; then
     ## GET Market History
     
@@ -620,7 +770,7 @@ do
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
    # market="market=ONION_BTC"
     
-    (curl GET https://stakecube.io/api/v2/exchange/spot/trades?market=ONION_BTC | jq . | tr -d '{[,"]}')
+    (curl -s GET https://stakecube.io/api/v2/exchange/spot/trades?market=ONION_BTC | jq . | tr -d '{[,"]}')
     #(curl GET  $ENDPOINT2$EXCHSPOTEP$TRADESMKT \
     # -d $market)
     
@@ -642,6 +792,7 @@ do
     fi
     
     printf "\n"
+#####  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     elif [[ "$m" == "10" ]]; then
     ## All Markets
     
@@ -653,11 +804,12 @@ do
     elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
     
     echo -e '\E[34;40m'"\033[1m"
-    (curl -s GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume | jq . )
-    read -n 1 -r -s -p $'Waiting for response. After response, press any key to continue...\n' a
+    (curl -s GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume | jq -cn --stream "fromstream(1|truncate_stream(inputs))")
+    echo -e '\E[33;40m'"\033[1m"; read -n 1 -r -s -p $'Waiting for response. After response, press any key to continue...\n' a
+    echo -e '\E[32;40m'"\033[1m"
     # curl GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume
-    
-    echo "StakeCube"
+    # echo -e '\E[33;40m'"\033[1m"
+    # echo "Press any key to continue..."
     
     
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
@@ -670,6 +822,7 @@ do
     fi
             
     printf "\n" 
+#####  BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
     elif [[ "$m" == "11" ]]; then
     ## Date Converter
       
@@ -679,15 +832,23 @@ do
     echo $DATETIME    
     
     printf "\n" 
+#####  CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     elif [[ "$m" == "12" ]]; then
     ## Check For Update
-    
-    LATESTVER=$(curl -s  -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/kk80586/tradeONION/tags | grep -n 'v1' | head -1 | sed -n 's/name//p' | sed 's/.*://' | tr -d  ' ":v,-')
+        
+    LATESTVER=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/kk80586/ShellOgreONION/tags | grep -n 'v1' | head -1 | sed -n 's/name//p' | sed 's/.*://' | tr -d  ' ":v,-')
       echo -e '\E[33;40m'"\033[1m"
       echo "Latest version is:" $LATESTVER
       echo "Your verion is:   " $CURRVER
-               
+       
+   # echo $(curl -i -u kk80586 -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/kk80586/ShellOgreONION/tags)
+      
+   #   curl -H “Authorization: token  ” https://api.github.com/search/repositories?q=user:kk80586
+      
+   # curl -H “Authorization: token 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” -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/kk80586/tradeONION/tags
+    
     printf "\n"
+##### DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
     elif [[ "$m" == "13" ]]; then
     ## TESTING area
     
@@ -698,55 +859,8 @@ do
     (curl -s --request GET \
     --url $ENDPOINT$ORDERS$market | jq . | tr -d '{,"}' | sed 's/success: true//g')  
     
-  #  If you just want to delete the timestamps you can use the del() function:
-
-   #  jq 'del(.[].timestamp)' input.json
-# However to achieve the desired output, I would not use the del() function. Since you know which fields should appear in output, you can simply #populate an array with group and id and then use the join() function:
-
-#jq -r '.[]|[.group,.uid]|join(",")' input.json
-#-r stands for raw ouput. jq will not print quotes around the values.
-
-#Output:
-
-#employees,elgalu
-#employees,mike
-#services,pacts
-    
-    
-    
-    
-    #  jq -r '.[]|[.group,.uid]|join(",")'
-    
-    #  --user $ksvalue | jq -c -r  '.balances | to_entries[] | [ "\(.key), \(.value)" ]' | sed '/0.00000000/d' | tr '[]"' ' ' )
-    
-     ## Market Orders
-    
-    #read -p "Enter Market [BTC-ONION]:" market ; market=${market:-BTC-ONION}
-    #echo -e '\E[36;40m'"\033[1m"
-    #(curl -s --request GET \
-    #--url $ENDPOINT$ORDERS$market  | jq  '.[] | ["{.buy, .sell)"]')
-    # | sed '/0.00000000/d' | tr '[]"' ' ' )
-    #| sed '/0.00000000/d' | tr '[]"' ' ' )
-  
-  
-#  jq '(.title) + " " + 
-#    (.number | tostring | (" " * (10 - length)) + .)'
-  
-  # to_entries[] |
-  
-  #  | jq -c -r  '.balances | to_entries[] | [ "\(.key), \(.value)" ]' | sed '/0.00000000/d' | tr '[]"' ' ' )
-  
-   
-  #  read -p "Enter Market [BTC-ONION]:" market ; market=${market:-BTC-ONION}
-  #  echo -e '\E[36;40m'"\033[1m"
-  #  (curl -s --request GET \
-  #  --url $ENDPOINT$ORDERS$market | jq . | tr -d '{,"}' | sed 's/success: true//g') 
-   
-   
-   
-   # |  tr -d '{,"}' | sed 's/success: true//g') 
-
 printf "\n"
+#####  EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 elif [[ "$m" == "14" ]]; then    
 ## Choose Exchange
 
@@ -770,6 +884,9 @@ read -p "Type a number [1, 2, 3, 4] :" x
     ;;
     2) ENDPOINT=$ENDPOINT2
     ksvalue=$ksvalue2
+    skey1=$ksvalue2 
+    skey2=$ksvalue3
+    echo $skey2
     i=0
     ;;
     3) ENDPOINT=$ENDPOINT3
@@ -787,12 +904,18 @@ read -p "Type a number [1, 2, 3, 4] :" x
 done
 echo -e '\E[32;40m'"\033[1m"  
 echo $ENDPOINT  
-echo $ksvalue
+#echo $ksvalue
        
       printf "\n"
-      
+#####  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF    
       elif [[ "$m" == "15" ]]; then
-      ## StakeCube testing
+      ## Arbitrage Info 
+      
+      
+       (curl -s --request GET \
+    https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq )
+      
+      
       
      (curl GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume | jq -r -c .result)
       
@@ -804,111 +927,8 @@ echo $ksvalue
       
       
      curl GET https://stakecube.io/api/v2/system/rateLimits 
-      
-     # GET https://api.stakecube.net/v1/exchange/tickers
-     # GET https://api.stakecube.net/v1/exchange/orders
-     # (curl GET https://stakecube.io/api/v2/exchange/trades )
-      
-      printf "\n"
-      elif [[ "$m" == "17" ]]; then
-      ## 
-      
-  #    curl GET https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq .[]
-
-      
-      (curl GET https://stakecube.io/api/v2/user/account?nonce=123&signature=xxx)
-     # read -p "Waiting for response. Press any key after respose "
-     
-     
-     # echo -n $MESSAGE | openssl dgst -sha256 -hmac $KEY -binary | base64
-     
-     
-     # This might be it.
-     # echo $PAYLOAD_BASE64 | base64 -d | openssl sha256 -hex -mac HMAC -macopt hexkey:$KEY_HEX
-     
-     
-     
-     
-     #  https://cryptii.com/pipes/hmac   <--this one
-     # https://www.liavaag.org/English/SHA-Generator/HMAC/
-     
-     
-     
-    #     market=SCC_BTC&limit=100&nonce=123
-    
-   #  X-API-KEY  
-    
-     
-     #  
-     
-     #  echo -n market=SCC_BTC&limit=100&nonce=123 | openssl dgst -sha256 -hmac 717bacd7dd3d51244cdbece894b0cfe27813ea4756558fd54635796dbc9e7b32ab433cefdcd0bfc4126d95bcae236a0d5aec2d87e99bd53281745e43d5ecae92 -hex | base64
-     
-     #  curl  GET https://stakecube.io/api/v2/exchange/spot/myOrderHistory?market=ONION_BTC&timestamp=1650170129725&limit=100&nonce=138&signature=8506a00455c682d1a36bc26b8f27631377aad77bb025d983ed8e0241eeb85ac6 X-API-KEY 289d4ea5f0e31d7cf57f16493ae82aa6d45a5cbd7fd78d038de626f45c203569
-     
-     
-      printf "\n"
-      elif [[ "$m" == "18" ]]; then
-      ## 
-      
-      
- #     function_name ()
-# {
-# command...
-# }
-
-read -p "key" key
-   if [[ $key = "" ]]; then 
-    echo 'You pressed enter!'
-else
-    echo "You pressed '$key'"
-fi   
-      
-      
-      printf "\n"
-      elif [[ "$m" == "19" ]]; then
-      ## 
-      
-  #    (curl GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume)
-      
-      
-      
-      printf "\n"
-      elif [[ "$m" == "20" ]]; then
-      ## My Market History
-# (curl GET https://stakecube.io/api/v2/exchange/spot/myTrades?market=ONION_BTC&limit=100&nonce=123&signature=xxx)
-  
-##  market=ONION_BTC&limit=100&nonce=1650213140910
-
-##  
-
-
-# https://stackoverflow.com/questions/48352311/trouble-getting-hmacsha256-to-produce-expected-results
-##  echo -n "symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559" | openssl dgst -sha256 -hmac "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j"
-
-# market=ONION_BTC_BTC&limit=100&nonce=1650213140911signature=xxx
-nonce1=$(date +%s%N | cut -b1-13) 
-market=ONION_BTC
-limit1='&limit=100&nonce='
-signature1='&signature='
-
-mysig=$(echo -n "$MARKETEQ$market$limit1$nonce1" | openssl dgst -sha256 -hmac  "secret goes 99281e92 here")
-mysig="${mysig:9}" 
-mysig2=$signature1$mysig
-
-market=ONION_BTC
-
-(curl -s GET \
--H 'X-API-KEY: key goes 0e315cb   here' \
-$ENDPOINT2$EXCHSPOTEP$MYTRADES$MARKETEQ$market$limit1$nonce1$mysig2 | jq )
-echo $ENDPOINT2$EXCHSPOTEP$MYTRADES$MARKETEQ$market$limit1$nonce1$mysig2
-unset market
-
-
-
-#######  KEEP  ##########   KEEP ##########################   KEEP   ############################################################
-#  mysig= echo -n "market=ONION_BTC&limit=100&nonce=1650213140911" | openssl dgst -sha256 -hmac "717bacd7dd3d51244cdbece894b0cfe27813ea4756558fd54635796dbc9e7b32ab433cefdcd0bfc4126d95bcae236a0d5aec2d87e99bd53281745e43d5ecae92" 
-##################################################################################################################################      
-      printf "\n"
+         
+    printf "\n" 
       
   fi
   showMenu
