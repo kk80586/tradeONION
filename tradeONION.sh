@@ -220,10 +220,6 @@ echo $ENDPOINT
   echo "[9]  All Markets "
   echo "[10] Miscellaneous"
   echo "[11] Choose an Exchange"
-  echo "[12] Check for update"
-  echo "[13] Account Info"
-  echo "[14] Arbitrage (By StakeCube)"
-  echo "[15] SouthXchange generate new address"
   echo "===================================="
   printf "\n"
   
