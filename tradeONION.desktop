@@ -1,10 +1,10 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/home/tradeONION-main/tradeONION.sh
+Exec=/home/tradeONION-1.1.0/tradeONION.sh
 GenericName[en_US]=
 GenericName=
-Icon=/home/tradeONION-master/menu_20220614_102633.png
+Icon=/home/tradeONION-1.1.0/menu_20220614_102633.png
 MimeType=
 Name[en_US]=tradeONION
 Name=tradeONION
