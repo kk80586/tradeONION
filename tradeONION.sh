@@ -1,5 +1,5 @@
 #!/bin/bash
-CURRVER=1.1.0
+CURRVER=0.9.0
 #cd "${0%/*}"
 # 
 # WARNING: Buy and Sell ONLY show ONION price (not bid or ask)
@@ -52,7 +52,9 @@ CURRVER=1.1.0
 # Complete [default] inputs. 
 # Learn at least enough jq to pretty up the output.
 # SC Ticker - convert scientific e notation to float.
-# 
+# SouthXchange order book
+# SouthXchange cancelMarketOrders
+#
 #  
 ##############################################################################
 ################################  API info  ################################## 
@@ -89,8 +91,7 @@ MARKETS=markets           # Retrieve a listing of all markets and basic informat
 # /history/{market}  # Retrieve the history of the last trades on {market} limited to 100 of the most recent trades. The date is a Unix UTC timestamp.
 #######################
 # endpoints Private API    ( Buy, Sell, Cancel, Orders, Balance are method POST )
-COIN=ONION
-                  # My favorite coin
+COIN=ONION           # My favorite coin
 ORDER=order/
 ORDERS=orders/              #
 BUY=order/buy               # Fields= market quantity price . 
@@ -199,25 +200,28 @@ urlenc='-H "Content-Type: application/x-www-form-urlencoded"'
 # 
 #######################################################################
 #
+editor=nano
+#
+#
 ## Print selection menu.
 clear
 showMenu(){
 echo -e '\E[32;40m'"\033[1m"
 unset market ; unset quantity ; unset price
-echo $ENDPOINT
+#echo $ENDPOINT
   echo "===================================="
-  echo "        tradeONION    "
+  echo "        tradeONION    " ; printf "\x1b[38;2;255;0;0m$ENDPOINT\x1b[0m\n"; echo -n -e '\E[32;40m'"\033[1m"
   echo "===================================="
   echo "[0]  EXIT"
   echo "[1]  Get Coin Balance"
-  echo "[2]  Get All Balances"
-  echo "[3]  BUY/SELL ONION with BTC"
-  echo "[4]  CANCEL Order"
+  echo "[2]  Get All Account Balances"
+  echo "[3]  BUY/SELL ONION (or other)"
+  echo "[4]  CANCEL Order(s)"
   echo "[5]  Display Order Book"
   echo "[6]  My Market Orders" 
   echo "[7]  Market Ticker"
   echo "[8]  Market History"
-  echo "[9]  All Markets "
+  echo "[9]  All Markets on exchange"
   echo "[10] Miscellaneous"
   echo "[11] Choose an Exchange"
   echo "===================================="
@@ -674,10 +678,7 @@ body1="{\"key\":\"$skey1\",\"nonce\":\"$nonce1\",\"listingCurrency\":\"$market\"
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "exchangeX"
     
-    
-    
-    
-     printf "\n"
+    printf "\n"
     
     fi
 #####  4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444    
@@ -705,14 +706,12 @@ body1="{\"key\":\"$skey1\",\"nonce\":\"$nonce1\",\"listingCurrency\":\"$market\"
     xapi="'X-API-KEY: "
     xapi1=$skey1\'
     xapikey=\"$xapi$xapi1\"
-   # skey2=\"${skey2}\"\'  
     HMAC1="-hmac "
     HMAC=$HMAC1$skey2
         
     echo "Type cancel to cancel all orders in specified market pair"
     read -p "Enter the Order # " orderIDnum
-    echo "$orderIDnum" "$cancelv"
-    if [[ "$orderIDnum" == "$cancelv" ]]
+    if [[ "$orderIDnum" == "cancel" ]]
     then 
     echo -e '\E[31;40m'"\033[1m"
     echo "!! WARNING - ALL active orders in the market pair you select will be CANCELLED !!"
@@ -744,6 +743,22 @@ body1="{\"key\":\"$skey1\",\"nonce\":\"$nonce1\",\"listingCurrency\":\"$market\"
     --data nonce=$nonce1 \
     --data signature=$signature3 | jq )
    fi
+   
+#   Endpoint: /exchange/spot/cancelAll
+#Type: POST
+#Parameter	Description	Example
+#(required) market	the chosen market pair	SCC_BTC
+#(required) nonce	the incremental integer	UNIX Timestamp
+#(required) signature	the parameter's HMAC signature	HEX Format
+#Example: POST https://stakecube.io/api/v2/exchange/spot/cancelAll
+
+#POST Body: market=SCC_BTC&nonce=123&signature=xxx"
+
+   
+   
+   
+   
+   
        
     printf "\n"
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
@@ -854,7 +869,7 @@ read -p "Which Listing Currency would you like [ONION]:" listingCurrency ; listi
 read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; referenceCurrency=${referenceCurrency:-BTC}
   
     (curl -s --request GET \
-    --url $sxurleq/$listingCurrency/$referenceCurrency | jq -r .[] | tr -d ',}{' )
+    --url $sxurleq/$listingCurrency/$referenceCurrency | jq -r )                                          # -r .[] | tr -d ',}{' )
      
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
     echo "exchangex"
@@ -898,7 +913,7 @@ read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; ref
     urleq="https://stakecube.io/api/v2/exchange/spot/myOpenOrder"
     signature3=$(printf "nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
        
-    (curl -v --request GET \
+    (curl --request GET \
     --url https://stakecube.io/api/v2/exchange/spot/myOpenOrder?nonce=$nonce1\&signature=$signature3 \
     -H 'Content-Type: application/x-www-form-urlencoded' \
     -H "X-API-KEY: $skey1" | jq )
@@ -908,7 +923,7 @@ read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; ref
    printf "\n" 
 ####################################################################    
     elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
-    echo "SouthXchange"
+    #echo "SouthXchange"
     
 #  LIST ORDERS
 
@@ -938,7 +953,7 @@ read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; ref
   mysig1="${mysig:9}"
 
     
-(curl -v -X POST https://www.southxchange.com/api/listOrders -H "Content-Type: application/json" -H "Hash: $mysig1" -d "{\"key\":\"$ksvalue4\",\"nonce\":\"$nonce1\"}" | jq -r . )
+(curl -s -X POST https://www.southxchange.com/api/listOrders -H "Content-Type: application/json" -H "Hash: $mysig1" -d "{\"key\":\"$ksvalue4\",\"nonce\":\"$nonce1\"}" | jq )
     
       
     elif [[ "$ENDPOINT" == "$ENDPOINT4" ]]; then
@@ -1127,18 +1142,23 @@ clear
 echo -e '\E[32;40m'"\033[1m"
 echo "Miscellaneous"
 echo -e '\E[33;40m'"\033[1m"
+echo "Exit this menu             = 0"
 echo "Arbitrage (By StakeCube)   = 1"
 echo "StakeCube Account info     = 2"  
 echo "Check for Update           = 3" 
 echo "SouthXchange New Address   = 4"  
 echo "Epoch Date Converter       = 5"
-echo "StakeCube Rate Limits      = 6"
+echo "My address list            = 6"
 echo "SouthXchange withdraw      = 7"
 echo "StakeCube My Order History = 8"
 echo
-read -p "Type a number [1, 2, 3, 4, 5, 6, 7, 8] :" x
+read -p "Type a number [0, 1, 2, 3, 4, 5, 6, 7, 8] :" x
 
    case $x in
+    0) echo -ne '\n' | showMenu
+    $x=0
+    i=0   
+    ;;
     1) read -p "Enter Market [BTC-ONION]:" market ; market=${market:-BTC-ONION}
        (curl --request GET https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq )
     i=0
@@ -1157,7 +1177,7 @@ read -p "Type a number [1, 2, 3, 4, 5, 6, 7, 8] :" x
     3) LATESTVER=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/kk80586/tradeONION/tags | grep -n 'v1' | head -1 | sed -n 's/name//p' | sed 's/.*://' | tr -d  ' ":v,-')
        echo -e '\E[33;40m'"\033[1m"
        echo "Latest version is:" $LATESTVER
-       echo "Your verion is:   " $CURRVER
+       echo "Your verion is   :" $CURRVER
     i=0
     ;;
     4) nonce1=$(date +%s%N | cut -b1-13) 
@@ -1178,8 +1198,15 @@ read -p "Type a number [1, 2, 3, 4, 5, 6, 7, 8] :" x
     i=0
     ;;
     6) ## Rate Limits
-       (curl -s -X GET https://stakecube.io/api/v2/system/rateLimits |jq )
+       #(curl -s -X GET https://stakecube.io/api/v2/system/rateLimits |jq )
+       echo "You can create a list of exchange addresses or other info you wish to save."
+       echo "The editor used is nano. You can change that in the script if you wish to use" 
+       echo "a different editor."
+       echo "This will create and/or open a file named exchanges.txt in you home (user) directory."
+       echo "If you chose this option by accident just close the editor ( <CTRL> z ) or close" 
+       echo "the program window if using GUI."
        read -p "Press ENTER to continue:" z
+       $editor ~/exchanges.txt
     i=0
     ;;
     7) nonce1=$(date +%s%N | cut -b1-13)
@@ -1239,9 +1266,9 @@ echo -e '\E[33;40m'"\033[1m"
 echo "TradeOgre    = 1"  
 echo "StakeCube    = 2" 
 echo "SouthXchange = 3"  
-echo "exchangeX    = 4" 
+#echo "exchangeX    = 4" 
 echo
-read -p "Type a number [1, 2, 3, 4] :" x
+read -p "Type a number [1, 2, 3] :" x
 
    case $x in
     1) ENDPOINT=$ENDPOINT1
@@ -1252,17 +1279,17 @@ read -p "Type a number [1, 2, 3, 4] :" x
     ksvalue=$ksvalue2
     skey1=$ksvalue2 
     skey2=$ksvalue3
-    echo $skey2
+    #echo $skey2
     i=0
     ;;
     3) ENDPOINT=$ENDPOINT3
     ksvalue=$ksvalue4
     #echo $ksvalue5
     i=0
-    ;;
-    4) ENDPOINT=$ENDPOINT4
-    ksvalue=$ksvalue6
-    i=0
+  #  ;;
+  #  4) ENDPOINT=$ENDPOINT4
+  #  ksvalue=$ksvalue6
+  #  i=0
     ;;
     *) 
     i=1;;
@@ -1270,7 +1297,7 @@ read -p "Type a number [1, 2, 3, 4] :" x
   esac
 done
 echo -e '\E[32;40m'"\033[1m"  
-echo $ENDPOINT  
+#echo $ENDPOINT  
 #echo $ksvalue
  printf "\n"     
   fi
