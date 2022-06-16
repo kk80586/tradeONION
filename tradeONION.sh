@@ -1,5 +1,5 @@
 #!/bin/bash
-CURRVER=0.9.0
+CURRVER=1.1.1
 #cd "${0%/*}"
 # 
 # WARNING: Buy and Sell ONLY show ONION price (not bid or ask)
