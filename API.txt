@@ -1,0 +1,547 @@
+TradeOgre
+---------
+
+API Documentation
+TradeOgre provides an easy to use API for anyone to access the market. Requests are made using standard HTTP and responses are returned in JSON format.
+
+The endpoint used for API calls is https://tradeogre.com/api/v1 with methods appended.
+
+Public API
+These API calls do not require any authentication.
+
+List Markets
+Method (GET)
+/markets
+Retrieve a listing of all markets and basic information including current price, volume, high, low, bid and ask.
+Example Response
+[{"BTC-AEON":{"initialprice":"0.00022004","price":"0.00025992","high":"0.00025992","low":"0.00022003","volume":"0.00359066","bid":"0.00022456","ask":"0.00025993"}},{"BTC-BTCP":{"initialprice":"0.00300573","price":"0.00325000","high":"0.00379000","low":"0.00300010","volume":"0.04753022","bid":"0.00300099","ask":"0.00325000"}},{"BTC-BTN":{"initialprice":"0.00000032","price":"0.00000033","high":"0.00000033","low":"0.00000028","volume":"0.01306734","bid":"0.00000027","ask":"0.00000033"}},{"BTC-CIV":{"initialprice":"0.00032127","price":"0.00026700","high":"0.00032127","low":"0.00026700","volume":"0.73182101","bid":"0.00026700","ask":"0.00029000"}},{"BTC-COAL":{"initialprice":"0.00000289","price":"0.00000330","high":"0.00000330","low":"0.00000288","volume":"0.00297381","bid":"0.00000289","ask":"0.00000345"}},{"BTC-DASH":{"initialprice":"0.04699999","price":"0.05757790","high":"0.05757790","low":"0.04699999","volume":"0.00322117","bid":"0.04880001","ask":"0.05757750"}},{"BTC-DNR":{"initialprice":"0.00027742","price":"0.00027743","high":"0.00027743","low":"0.00027742","volume":"0.00078309"}},{"BTC-DOGE":{"initialprice":"0.00000041","price":"0.00000041","high":"0.00000041","low":"0.00000039","volume":"0.23236572","bid":"0.00000040","ask":"0.00000041"}},{"BTC-ETN":{"initialprice":"0.00000352","price":"0.00000338","high":"0.00000352","low":"0.00000319","volume":"2.50156282","bid":"0.00000328","ask":"0.00000337"}},{"BTC-FBF":{"initialprice":"0.00000002","price":"0.00000002","high":"0.00000002","low":"0.00000002","volume":"0.00020160"}},{"BTC-GRFT":{"initialprice":"0.00000307","price":"0.00000317","high":"0.00000336","low":"0.00000296","volume":"5.66677757","bid":"0.00000317","ask":"0.00000318"}},{"BTC-IPBC":{"initialprice":"0.00001874","price":"0.00001995","high":"0.00001995","low":"0.00001711","volume":"0.13150579","bid":"0.00001875","ask":"0.00001996"}},{"BTC-IRD":{"initialprice":"0.00000380","price":"0.00000310","high":"0.00000396","low":"0.00000310","volume":"0.07091748","bid":"0.00000310","ask":"0.00000337"}},{"BTC-ITNS":{"initialprice":"0.00000057","price":"0.00000053","high":"0.00000057","low":"0.00000049","volume":"0.01109704","bid":"0.00000053","ask":"0.00000055"}},{"BTC-KRB":{"initialprice":"0.00006215","price":"0.00006900","high":"0.00006900","low":"0.00005001","volume":"0.00205379","bid":"0.00006900","ask":"0.00007195"}},{"BTC-LTC":{"initialprice":"0.01905000","price":"0.01922345","high":"0.01922994","low":"0.01832040","volume":"0.38355349","bid":"0.01878022","ask":"0.01922343"}},{"BTC-LUX":{"initialprice":"0.00065505","price":"0.00065505","high":"0.00065505","low":"0.00065505","volume":"0.00069824","bid":"0.00071401","ask":"0.00075971"}},{"BTC-NAH":{"initialprice":"0.00000204","price":"0.00000202","high":"0.00000204","low":"0.00000202","volume":"0.05168677","bid":"0.00000202","ask":"0.00000380"}},{"BTC-NBR":{"initialprice":"0.00000066","price":"0.00000066","high":"0.00000070","low":"0.00000052","volume":"0.02534533","bid":"0.00000058","ask":"0.00000066"}},{"BTC-PCN":{"initialprice":"0.00000001","price":"0.00000001","high":"0.00000001","low":"0.00000001","volume":"0.00088627","bid":"0.00000000","ask":"0.00000001"}},{"BTC-PLURA":{"initialprice":"0.00000025","price":"0.00000030","high":"0.00000041","low":"0.00000023","volume":"0.39319767","bid":"0.00000030","ask":"0.00000033"}},{"BTC-SUMO":{"initialprice":"0.00017004","price":"0.00017007","high":"0.00017007","low":"0.00017004","volume":"0.00245623","bid":"0.00017008","ask":"0.00019994"}},{"BTC-TRTL":{"initialprice":"0.00000001","price":"0.00000001","high":"0.00000002","low":"0.00000001","volume":"0.42322449","bid":"0.00000001","ask":"0.00000002"}},{"BTC-WAE":{"initialprice":"0.00000017","price":"0.00000013","high":"0.00000018","low":"0.00000012","volume":"0.01046213","bid":"0.00000013","ask":"0.00000017"}},{"BTC-XAO":{"initialprice":"0.00000090","price":"0.00000095","high":"0.00000100","low":"0.00000090","volume":"0.00177852","bid":"0.00000095","ask":"0.00000100"}},{"BTC-XMR":{"initialprice":"0.02502002","price":"0.02500000","high":"0.03102001","low":"0.02500000","volume":"0.15549958","bid":"0.02420000","ask":"0.02625000"}},{"BTC-XTL":{"initialprice":"0.00000004","price":"0.00000004","high":"0.00000004","low":"0.00000003","volume":"0.40128073","bid":"0.00000003","ask":"0.00000004"}},{"BTC-XUN":{"initialprice":"0.00000024","price":"0.00000024","high":"0.00000030","low":"0.00000021","volume":"0.01266742","bid":"0.00000024","ask":"0.00000028"}},{"BTC-XVG":{"initialprice":"0.00000449","price":"0.00000498","high":"0.00000510","low":"0.00000385","volume":"0.07170363","bid":"0.00000426","ask":"0.00000497"}}]
+Get Order Book
+Method (GET)
+/orders/{market}
+Retrieve the current order book for {market} such as BTC-XMR.
+Example Response
+{"success":true,"buy":{"0.02425501":"36.46986607","0.02425502":"93.64201137","0.02425503":"19.02000000","0.02425504":"101.68086403","0.02425505":"29.57700547","0.02425506":"104.61014094","0.02425507":"142.23464863","0.02425508":"25.31886131","0.02425509":"79.46064443","0.02425510":"76.22400000","0.02425511":"49.31800000","0.02425512":"23.67600000","0.02425513":"3.26463919","0.02425514":"78.16971446","0.02425515":"115.49000000"},"sell":{"0.02427176":"737.34633975","0.02427232":"94.30483300","0.02427233":"278.29200000","0.02427234":"662.39516500","0.02427235":"947.71751090","0.02427236":"2527.89139301","0.02427237":"0.15080884","0.02427475":"0.16884703","0.02427580":"0.02597142","0.02427658":"2.12366600","0.02427659":"89.02183300","0.02427660":"83.20000000","0.02427799":"9.34148978","0.02427800":"4.19982028","0.02427940":"0.46177255","0.02427941":"98.87243165","0.02427942":"479.11100000"}}
+Get Ticker
+Method (GET)
+/ticker/{market}
+Retrieve the ticker for {market}, volume, high, and low are in the last 24 hours, initialprice is the price from 24 hours ago.
+Example Response
+{"success":true,"initialprice":"0.02502002","price":"0.02500000","high":"0.03102001","low":"0.02500000","volume":"0.15549958","bid":"0.02420000","ask":"0.02625000"}
+Get Trade History
+Method (GET)
+/history/{market}
+Retrieve the history of the last trades on {market} limited to 100 of the most recent trades. The date is a Unix UTC timestamp.
+Example Response
+[{"date":1515128233,"type":"sell","price":"0.02454320","quantity":"0.17614230"},{"date":1515128233,"type":"sell","price":"0.02454181","quantity":"0.11651065"},{"date":1515128233,"type":"sell","price":"0.02453774","quantity":"11.37791774"},{"date":1515128235,"type":"sell","price":"0.02453774","quantity":"52.62616027"},{"date":1515128235,"type":"sell","price":"0.02453774","quantity":"0.39786743"},{"date":1515128253,"type":"sell","price":"0.02453774","quantity":"0.12844529"},{"date":1515128253,"type":"sell","price":"0.02453774","quantity":"7.89600000"},{"date":1515128253,"type":"sell","price":"0.02453774","quantity":"24.21560927"},{"date":1515128253,"type":"sell","price":"0.02453759","quantity":"0.25618000"},{"date":1515128253,"type":"sell","price":"0.02453660","quantity":"3.07034916"},{"date":1515128253,"type":"sell","price":"0.02453660","quantity":"5.66611628"},{"date":1515128254,"type":"sell","price":"0.02453660","quantity":"0.28166838"},{"date":1515128255,"type":"sell","price":"0.02453660","quantity":"1.00000000"},{"date":1515128271,"type":"sell","price":"0.02453660","quantity":"2.98866618"},{"date":1515128271,"type":"sell","price":"0.02453660","quantity":"38.26919550"},{"date":1515128271,"type":"sell","price":"0.02453660","quantity":"3.85000000"}]
+Private API
+API keys will need to be generated for these API calls. To generate an API key, go into your account settings and click on Generate New API Keys. Remember to only store these API keys in a secure location. API keys can be removed from your account and new ones can be generated.
+
+To authenticate, pass your API keys with basic authentication in the HTTP request, for example in curl use: -u '{public}:{private}'
+
+Submit Buy Order
+Method (POST)
+/order/buy
+POST Fields
+market quantity price
+Submit a buy order to the order book for a market. The success status will be false if there is an error, and error will contain the error message. Your available buy and sell balance for the market will be returned if successful. If your order is successful but not fully fulfilled, the order is placed onto the order book and you will receive a uuid for the order.
+Example Response
+{"success":true,"uuid":"235f770b-aa3f-4a31-8194-73d9612c2df1","bnewbalavail":"0.10000000","snewbalavail":"0.50000000"}
+Submit Sell Order
+Method (POST)
+/order/sell
+POST Fields
+market quantity price
+Submit a sell order to the order book for a market. The success status will be false if there is an error, and error will contain the error message. Your available buy and sell balance for the market will be returned if successful. If your order is successful but not fully fulfilled, the order is placed onto the order book and you will receive a uuid for the order.
+Example Response
+{"success":true,"uuid":"235f770b-aa3f-4a31-8194-73d9612c2df1","bnewbalavail":"0.10000000","snewbalavail":"0.50000000"}
+Cancel Order
+Method (POST)
+/order/cancel
+POST Fields
+uuid
+Cancel an order on the order book based on the order uuid. The uuid parameter can also be set to all and all of your orders will be cancelled across all markets.
+Example Response
+{"success":true}
+Get Orders
+Method (POST)
+/account/orders
+POST Fields
+market
+Retrieve the active orders under your account. The market field is optional, and leaving it out will return all orders in every market. date is a Unix UTC timestamp.
+Example Response
+[{"uuid":"a40ac710-8dc5-b5a8-aa69-389715197b14","date":1514876938,"type":"sell","price":"0.02621960","quantity":"1.55772526","market":"BTC-XMR"},{"uuid":"7cbbdbf9-a3a8-d106-c53a-2b17e535580d","date":1514856437,"type":"sell","price":"0.02590469","quantity":"1.54412193","market":"BTC-XMR"},{"uuid":"f2a156c6-b085-c272-3132-657585ab19cf","date":1514847818,"type":"buy","price":"0.02226940","quantity":"4.47924057","market":"BTC-XMR"},{"uuid":"1c137c7e-2653-639a-531e-10a227cda052","date":1514845801,"type":"sell","price":"0.02514424","quantity":"0.04565047","market":"BTC-XMR"},{"uuid":"0f62c05e-7293-fa1c-f13f-7ca54272db00","date":1514831165,"type":"sell","price":"0.02614656","quantity":"0.11642460","market":"BTC-XMR"},{"uuid":"82a254c4-2408-8962-13cb-c4fa6eff0536","date":1514503221,"type":"sell","price":"0.02489833","quantity":"0.40163143","market":"BTC-XMR"},{"uuid":"0e2211e3-4f59-cd7c-2825-a56ddb49288e","date":1514428646,"type":"buy","price":"0.02348630","quantity":"0.24549267","market":"BTC-XMR"},{"uuid":"d9fb4ecd-b565-89d6-4313-7d265d131dce","date":1514426549,"type":"buy","price":"0.02293571","quantity":"271.49500000","market":"BTC-XMR"},{"uuid":"57a9b092-38cc-e1da-64fe-9978d097226b","date":1514426168,"type":"buy","price":"0.02028922","quantity":"0.09857452","market":"BTC-XMR"},{"uuid":"301f7892-5da5-9338-1a6d-bb4523e84acc","date":1514419953,"type":"sell","price":"0.02585061","quantity":"0.07579787","market":"BTC-XMR"},{"uuid":"f04e2526-2dfc-f551-2fe1-f494f0b05a6d","date":1514419230,"type":"sell","price":"0.02466752","quantity":"18.33794037","market":"BTC-XMR"},{"uuid":"664c3b32-8373-ff6f-de21-c39cf69836d3","date":1514417522,"type":"sell","price":"0.02585998","quantity":"3.69720197","market":"BTC-XMR"},{"uuid":"4e29ae46-ee04-1842-2731-9d1ceaf2617a","date":1514415373,"type":"sell","price":"0.02568255","quantity":"0.37899005","market":"BTC-XMR"},{"uuid":"18ca887c-1275-fd0f-f0ff-c740f2372c08","date":1514408908,"type":"sell","price":"0.02570058","quantity":"0.12440815","market":"BTC-XMR"}]
+Get Order
+Method (GET)
+/account/order/{uuid}
+Retrieve information about a specific order by the uuid of the order. date is a Unix UTC timestamp. If an order was 100% fulfilled, it will be removed and this api method will return a 'Order not found' error message, so your app must take this into account if it needs to determine if an order was completed.
+Example Response
+{"success":true,"date":"1526503486","type":"sell","market":"BTC-XMR","price":"0.02891990","quantity":"1.00000000","fulfilled":"0.00000000"}
+Get Balance
+Method (POST)
+/account/balance
+POST Fields
+currency
+Get the balance of a specific currency for you account. The currency field is required, such as BTC. The total balance is returned and the available balance is what can be used in orders or withdrawn.
+Example Response
+{"success":true,"balance":"0.10000000","available":"0.00000000"}
+Get Balances
+Method (GET)
+/account/balances
+Retrieve all balances for your account.
+Example Response
+{"success":true,"balances":{"BTC":"13.00419483","XMR":"396.93688709","LTC":"2.00000000","SUMO":"1.00000000","ETN":"0.10000000","AEON":"0.00000000","XVG":"1.00000000","BCN":"2.20000000","FBF":"1.00000000","XAO":"2.00000000","ITNS":"20.00000000"}}
+
+=======================================================================================================================================================================
+StakeCube
+---------
+
+Public APIs (No Auth Required)
+Arbitrage Info
+Returns a list of all market pairs matching your Maker/Taker coin, for example; ticker=SCC would return all markets paired with SCC.
+
+Endpoint: /exchange/spot/arbitrageInfo
+Parameter	Description	Example
+(required) ticker	a coin's ticker	SCC
+Example: GET https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=SCC
+
+Markets
+Returns a list of all markets matching your Base coin, for example; calling the bare endpoint would return a list of all coins and pairs globally on the Exchange, appending baseMarket=BTC to the endpoint would return all markets paired against BTC, you may also add a orderBy parameter which allows you to customize how the list is ordered, by default the list is in alphabetical order, for example; baseMarket=BTC&orderBy=volume would return the list of markets by descending volume.
+
+Endpoint: /exchange/spot/markets
+Parameter	Description	Example
+(optional) market	specific market pair	SCC_BTC
+(optional) baseMarket	specific base market	BTC
+(optional) category	specific category	BTC, SCC, ALTS, STABLE
+(optional) orderBy	the list's ordering	volume or change
+(optional) orderData	include order information	true or false
+(optional) priceHistory	include price history	true or false
+Example: GET https://stakecube.io/api/v2/exchange/spot/markets?baseMarket=BTC&orderBy=volume
+
+OHLC Charting Data
+Returns raw OHLC chart data for the specified market and interval, for example; market=SCC_BTC&interval=1h would return 1h-per-bar timeframe data on the SCC_BTC market.
+
+Endpoint: /exchange/spot/ohlcData
+Parameter	Description	Example
+(required) market	the chosen market pair	SCC_BTC
+(required) interval	the chosen time-period	1h
+NOTE: interval is limited to the below options:
+
+1m
+5m
+15m
+30m
+1h
+4h
+1d
+1w
+1mo
+Example: GET https://stakecube.io/api/v2/exchange/spot/ohlcData?market=SCC_BTC&interval=1h
+
+Orderbook
+Returns orderbook data for a specified market pair and orderbook side, for example; market=SCC_BTC&side=BUY would return all bids of the SCC_BTC market.
+
+Endpoint: /exchange/spot/orderbook
+Parameter	Description	Example
+(required) market	the chosen market pair	SCC_BTC
+(optional) side	the chosen orderbook side	BUY or SELL
+NOTE: side can be left empty and/or removed completely from the query, which will return BOTH sides of the orderbook (Asks + Bids).
+
+Example: GET https://stakecube.io/api/v2/exchange/spot/orderbook?market=SCC_BTC
+
+Trades
+Returns the last trades of a specified market pair, for example; market=SCC_BTC would return a list of the last 100 trades in the SCC/BTC market pair.
+
+Endpoint: /exchange/spot/trades
+Parameter	Description	Example
+(required) market	the chosen market pair	SCC_BTC
+(optional) limit	the amount of trades to fetch	100
+NOTE: limit can be left empty and/or removed completely from the query, which will return the last 100 trades.
+
+Example: GET https://stakecube.io/api/v2/exchange/spot/trades?market=SCC_BTC
+
+lock Private APIs (Authentication Required)
+For security, our private APIs require two additional body fields on the majority of endpoints (with a few exceptions), these fields being:
+
+Field	Description
+(required) nonce	any integer larger than the last API call's integer (millisecond timestamp)
+(required) signature	a HMAC signature of the full body contents in URL-encoded format
+The Content-Type must be set to: application/x-www-form-urlencoded
+
+In addition, your API key should be included as a header, under this name: X-API-KEY
+
+For new API users, the nonce will start at 0, you may provide any integer higher than that as the nonce, for example: your nonce is 0, so your next call uses nonce 1, next call uses nonce 2... and repeat. You may also use timestamps for this purpose, but ensure it's a millisecond timestamp, otherwise a second-based timestamp limits you to a call every second maximum.
+
+The HMAC signature is composed of all the URL-encoded parameters of your API call's body, so for example; you're calling /exchange/spot/order which contains the body parameters of: "nonce=123&market=SCC_BTC&side=BUY&price=0.00010000&amount=10", you would sign ALL of this exact input in SHA256, digest as HEX, and append the signature as the parameter: signature= at the end of your request.
+
+My Trades
+Returns a list of your last trades in a selected market, descending by timestamp, you may set a custom limit to the amount of returned trades, for example: market=SCC_BTC&limit=100 returns your last 100 trades on the SCC_BTC market.
+
+Endpoint: /exchange/spot/myTrades
+Type: GET
+Parameter	Description	Example
+(optional) market	the chosen market pair	SCC_BTC
+(optional) limit	the maximum trades to return	100
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Note: limit can be left empty and/or removed completely from the query, which will use 100 as the default limit.
+
+Example: GET https://stakecube.io/api/v2/exchange/spot/myTrades?market=SCC_BTC&limit=100&nonce=123&signature=xxx
+
+My Order History
+Returns a list of your historical orders of a chosen market and limit, descending by timestamp, for example: market=SCC_BTC&limit=100 returns your last 100 orders done on the SCC_BTC market.
+
+Endpoint: /exchange/spot/myOrderHistory
+Type: GET
+Parameter	Description	Example
+(optional) market	the chosen market pair	SCC_BTC
+(optional) limit	the maximum trades to return	100
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Note: limit can be left empty and/or removed completely from the query, which will use 100 as the default limit.
+
+Example: GET https://stakecube.io/api/v2/exchange/spot/myOrderHistory?market=SCC_BTC&limit=100&nonce=123&signature=xxx
+
+My Open Orders
+Returns a list of your currently open orders, their IDs, their market pair, and other relevent order information.
+
+Endpoint: /exchange/spot/myOpenOrder
+Type: GET
+Parameter	Description	Example
+(optional) market	the chosen market pair	SCC_BTC
+(optional) limit	the maximum trades to return	100
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Example: GET https://stakecube.io/api/v2/exchange/spot/myOpenOrder?nonce=123&signature=xxx
+
+Order
+Creates an exchange limit order on the chosen market, side, price and amount, for example: market=SCC_BTC&side=BUY&price=0.00010000&amount=10 would buy 10 SCC with BTC at a price of 10k sats per SCC.
+
+Endpoint: /exchange/spot/order
+Type: POST
+Parameter	Description	Example
+(required) market	the chosen market pair	SCC_BTC
+(required) side	the market side to place the order	BUY or SELL
+(required) price	the price in the Base coin	0.00010000 (BTC)
+(required) amount	the amount in the Market coin	10 (SCC)
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Note: The side must be in full caps, e.g: BUY or SELL, not buy or sell.
+
+Example: POST https://stakecube.io/api/v2/exchange/spot/order
+
+POST Body: market=SCC_BTC&side=BUY&price=0.00010000&amount=10&nonce=123&signature=xxx
+
+Cancel
+Cancels an order by it's unique ID, for example; You place an order, it's returned ID is 123, you then cancel with the parameters: orderId=123 - the order is cancelled and removed from it's market.
+
+Endpoint: /exchange/spot/cancel
+Type: POST
+Parameter	Description	Example
+(required) orderId	the order's unique ID	123
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Example: POST https://stakecube.io/api/v2/exchange/spot/cancel
+
+POST Body: orderId=123&nonce=123&signature=xxx
+
+Cancel All
+Cancels all orders in a chosen market pair, e.g: market=SCC_BTC will cancel ALL limit orders on the SCC_BTC market pair.
+
+Endpoint: /exchange/spot/cancelAll
+Type: POST
+Parameter	Description	Example
+(required) market	the chosen market pair	SCC_BTC
+(required) nonce	the incremental integer	UNIX Timestamp
+(required) signature	the parameter's HMAC signature	HEX Format
+Example: POST https://stakecube.io/api/v2/exchange/spot/cancelAll
+
+POST Body: market=SCC_BTC&nonce=123&signature=xxx
+
+
+=======================================================================================================================================================================
+SouthXchange
+------------
+
+API
+.NET Library
+https://github.com/southxchange/SouthXchange-.NET-API-Library
+WebSocket Example
+https://www.southxchange.com/content/websocket.txt
+
+
+PUBLIC DATA
+MARKETS
+
+Lists all markets
+
+
+GET https://www.southxchange.com/api/markets
+See example
+
+Field	Description
+Array of [Market entry]
+[Market entry] (Array)
+Index 0	Listing currency code
+Index 1	Reference currency code
+MARKETS (Version 2)
+
+Lists all markets
+
+
+GET https://www.southxchange.com/api/v2/markets
+See example
+
+Field	Description
+Array of [Market entry]
+[Market entry] (Array)
+Index 0	Listing currency code
+Index 1	Reference currency code
+Index 2	Market ID
+PRICE
+
+Gets price of a given market
+
+
+GET https://www.southxchange.com/api/price/{listingCurrencyCode}/{referenceCurrencyCode}
+See example
+
+Field	Description
+Bid	Highest buy order
+Ask	Lowest sell order
+Last	Last price
+Variation24Hr	Last 24 hours last price variation
+Volume24Hr	Last 24 hours volume
+PRICES
+
+Lists prices of all markets
+
+
+GET https://www.southxchange.com/api/prices
+See example
+
+Field	Description
+Array of [Price entry]
+[Price entry]
+Market	Market name
+Bid	Highest buy order
+Ask	Lowest sell order
+Last	Last price
+Variation24Hr	Last 24 hours last price variation
+Volume24Hr	Last 24 hours volume
+BOOK
+
+Lists order book of a given market
+
+
+GET https://www.southxchange.com/api/book/{listingCurrencyCode}/{referenceCurrencyCode}
+See example
+
+Field	Description
+BuyOrders	Buy orders. Array of [Order entry]
+SellOrders	Sell orders. Array of [Order entry]
+[Order entry]
+Index	Incremental value for each book entry
+Amount	Book entry total amount
+Price	Book entry price
+TRADES
+
+Lists latest trades in a given market
+
+
+GET https://www.southxchange.com/api/trades/{listingCurrencyCode}/{referenceCurrencyCode}
+See example
+
+Field	Description
+Array of [Trade entry]
+[Trade entry]
+At	Execution time in Unix standard format (UTC)
+Amount	Amount in listing currency
+Price	Price in reference currency
+Type	Possible values: buy, sell
+HISTORY
+
+List market history between two dates
+
+
+GET https://www.southxchange.com/api/history/{listingCurrencyCode}/{referenceCurrencyCode}/{start}/{end}/{periods}
+See example
+
+Parameters
+Field	Description
+listingCurrencyCode	Market listing currency
+referenceCurrencyCode	Market reference currency
+start	Start date in milliseconds from January 1, 1970
+end	End date in milliseconds from January 1, 1970
+periods	Number of periods to get (Optional: defaults to 100)
+Result
+Array of [History Entry]
+[History Entry]
+Date	Start date of the period
+PriceHigh	Highest price of the period
+PriceLow	Lowest price of the period
+PriceOpen	First price of the period
+PriceClose	Last price of the period
+Volume	Volume of the period
+
+
+PRIVATE DATA
+Rules to use the private API
+You need to generate a pair of API key and secret in your account settings.
+All methods are sent as POST.
+Parameters are sent in the request body as JSON, except for the Hash which is sent as an HTTP header named “Hash”.
+There are two parameters that are always needed in the request body: nonce and key (API key). The documentation below will omit these parameters because they are always needed. Hash is also always needed but in the headers.
+Nonce is a positive numerical value. You can use any number, but it must be greater than the last nonce you used in the previous request. To avoid keeping track of the nonce you can use a value that will always change, for example a timestamp in milliseconds or microseconds.
+Methods will return HTTP 200 when successful, and HTTP 500 when an error occurred.
+Hash is the HMAC-SHA512 of the request body (JSON) signed with the secret value. Make sure the encoding is UTF-8.
+Parameters
+Field	Description
+key	API Key
+nonce	Positive numerical value greater than the one used in the previous call
+Hash (HTTP header)	HMAC-SHA512 of the request body signed with the secret value
+PLACE ORDER
+
+Places an order in a given market. Permission required: Place Order
+
+
+POST https://www.southxchange.com/api/placeOrder
+Parameters
+Field	Description
+listingCurrency	Market listing currency
+referenceCurrency	Market reference currency
+type	Order type. Possible values: buy, sell
+amount	Order amount in listing currency
+limitPrice	Optional price in reference currency. If null then order is executed at market price
+Result
+Order code
+CANCEL ORDER
+
+Cancels a given order. Permission required: Cancel Order
+
+
+POST https://www.southxchange.com/api/cancelOrder
+Parameters
+Field	Description
+orderCode	Order code to cancel
+CANCEL MARKET ORDERS
+
+Cancels all orders in a given market. Permission required: Cancel Order
+
+
+POST https://www.southxchange.com/api/cancelMarketOrders
+Parameters
+Field	Description
+listingCurrency	Market listing currency
+referenceCurrency	Market reference currency
+LIST ORDERS
+
+Lists all pending orders. Permission required: List Orders
+
+
+POST https://www.southxchange.com/api/listOrders
+Parameters
+None
+Result
+Field	Description
+Array of [Order entry]
+[Order entry]
+Code	Order code
+Type	Order type. Possible values: buy, sell
+Amount	Pending amount in listing currency
+OriginalAmount	Original amount in listing currency
+LimitPrice	Order price in reference currency
+ListingCurrency	Market listing currency
+ReferenceCurrency	Market reference currency
+GENERATE NEW ADDRESS
+
+Generates a new address for a given cryptocurrency. Permission required: Generate New Address
+
+
+POST https://www.southxchange.com/api/generatenewaddress
+Parameters
+Field	Description
+currency	Currency for which a new address will be generated
+Result
+Address
+WITHDRAW
+
+Withdraws to a given address. Permission required: Withdraw
+
+
+POST https://www.southxchange.com/api/withdraw
+Parameters
+Field	Description
+currency	Currency code to withdraw
+address	Destination address
+amount	Amount to withdraw. Destination address will receive this amount minus fees
+Result
+Field	Description
+Status	Possible values:
+ok: withdrawal request succees
+holdsNotSatisfied: cannot withdraw due to hold in your account
+limitReached: cannot withdraw due to withdrawal limit
+Max	The remaining withdrawal limit
+MaxDaily	The daily withdrawal limit
+MovementId	ID of this withdrawal
+LIST BALANCES
+
+Lists balances for all currencies. Permission required: List Balances
+
+
+POST https://www.southxchange.com/api/listBalances
+Parameters
+None
+Result
+Field	Description
+Array of [Balance entry]
+[Balance entry]
+Currency	Currency code
+Deposited	Total amount deposited for this currency code
+Available	Total amount that is not committed in orders
+Unconfirmed	Total amount unconfirmed in pending deposits
+LIST TRANSACTIONS
+
+List all transactions. Permission required: List Balances
+
+
+POST https://www.southxchange.com/api/listTransactions
+Parameters	Description
+Currency	Currency code
+TransactionType	Transaction type. Possible values: transactions, deposits, withdrawals, depositswithdrawals (Optional: defaults to transactions)
+PageIndex	Page index
+PageSize	Page size. Maximum: 50
+SortField	Sort field
+Descending	If [SortField] is descending
+Result
+Field	Description
+Array of [Transaction Entry]
+[Transaction Entry]
+Date	Date of the transaction
+CurrencyCode	The currency code of the transaction. Delisted coins shown as '?'
+Amount	Amount of the transaction
+TotalBalance	Total balance after this transaction
+Type	Possible values: trade, trade fee, deposit, withdraw, etc
+Status	Possible values: pending, confirmed, processed, etc
+Address	Deposit or withdraw address
+Hash	Deposit or withdraw chain transaction hash
+Price	Trade price
+OtherAmount	Trade amount of the other currency
+OtherCurrency	The other trade currency. Delisted coins shown as '?'
+OrderCode	Trade order code
+TradeId	The ID of the trade
+MovementId	Deposit or withdrawal ID
+GET LIGHTNING NETWORK INVOICE
+
+Generates a new Lightning Network invoice for a given cryptocurrency. Permission required: Generate New Address
+
+
+POST https://www.southxchange.com/api/getlninvoice
+Parameters	Description
+currency	Currency code for which the invoice will be generated. Possible values: BTC, LTC
+amount	Invoice amount
+Result
+Payment request (invoice)
+SouthXchange
+
+
+
+
