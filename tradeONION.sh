@@ -573,7 +573,7 @@ signature3=$(printf "market=$marketv&side=$side1&price=$price&amount=$quantity&n
     echo "Minimum quantity of ONION is : " $minquantity
     read -p "Enter quantity desired [$minquantity]: " quantity ; quantity=${quantity:-$minquantity}
     read -p "Enter limit-price bid in Reference Currency per Listing coin (default= current $side1 price) [$last3] : " price ; price=${price:-$ask2}
-    read -p " SPOT ROUTINE GOES HERE  " x
+    # read -p " SPOT ROUTINE GOES HERE  " x
     echo -e '\E[33;40m'"\033[1m"
     echo "This is a "${side1,,}" order."
     echo "You entered (read carefully):"
