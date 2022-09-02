@@ -50,7 +50,7 @@ $editor sxcks2.txt
 echo
 echo 
 echo "Would you like a launcher placed on your Desktop? (This should work on Debian based systems. Otherwise you may need to create launcher manually)."
-echo "You may need to add the icon image manually."
+echo "You may need to add the icon image and path manually in properties."
 
    while true; do
      echo -e '\E[31;40m'"\033[1m"
