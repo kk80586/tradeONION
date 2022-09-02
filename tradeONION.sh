@@ -1,5 +1,5 @@
 #!/bin/bash
-CURRVER=1.1.2
+CURRVER=1.1.3
 cd "${0%/*}"
 # 
 # WARNING: Buy and Sell ONLY show ONION price (not bid or ask)
@@ -359,6 +359,8 @@ done
     if [[ "$ENDPOINT" == "$ENDPOINT1" ]]; then
     BTCONION=$(curl -s --request GET \
     --url https://tradeogre.com/api/v1/ticker/BTC-ONION | jq '.price' | tr -d '"')
+    BTCONIONBUY=$(curl -s --request GET \
+    --url https://tradeogre.com/api/v1/ticker/BTC-ONION | jq '.ask' | tr -d '"')
   
     CURRENTBTC=$(curl -s --request POST \
     --url https://tradeogre.com/api/v1/account/balance \
@@ -392,7 +394,7 @@ while true; do
     minquantity=$(echo 0.00005000/$BTCONION | bc)
     echo "Minimum quantity of "$COIN" is : " $minquantity
     read -p "Enter quantity desired [$minquantity]: " quantity ; quantity=${quantity:-$minquantity} 
-    read -p "Enter price bid per coin (default= current BUY price) [$BTCONION] : " price ; price=${price:-$BTCONION}
+    read -p "Enter price bid per coin (default= current BUY price) [$BTCONIONBUY] : " price ; price=${price:-$BTCONIONBUY}
     
     echo -e '\E[33;40m'"\033[1m"
     echo "This is a "${side1^^}" order."
@@ -536,9 +538,9 @@ signature3=$(printf "market=$marketv&side=$side1&price=$price&amount=$quantity&n
   bid1=$(echo "$bid1" | awk -F"E" 'BEGIN{OFMT="%10.8f"} {print $1 * (10 ^ $2)}')
   ask2=$(echo "$ask2" | awk -F"E" 'BEGIN{OFMT="%10.8f"} {print $1 * (10 ^ $2)}')
   last3=$(echo "$last3" | awk -F"E" 'BEGIN{OFMT="%10.8f"} {print $1 * (10 ^ $2)}')
-  echo "b " $bid1
-  echo "a " $ask2
-  echo "l " $last3
+  echo "bid:  " $bid1
+  echo "ask:  " $ask2
+  echo "list: " $last3
  sleep 3s
  # BTC price
  read btclast < <(echo $(curl -X GET https://www.southxchange.com/api/price/BTC/TUSD | jq -r '.Last' | tr -d '"'))
@@ -576,7 +578,7 @@ signature3=$(printf "market=$marketv&side=$side1&price=$price&amount=$quantity&n
     echo "Minimum quantity of ONION is : " $minquantity
     read -p "Enter quantity desired [$minquantity]: " quantity ; quantity=${quantity:-$minquantity}
     read -p "Enter limit-price bid in Reference Currency per Listing coin (default= current $side1 price) [$last3] : " price ; price=${price:-$ask2}
-    read -p " SPOT ROUTINE GOES HERE  " x
+    #read -p " SPOT ROUTINE GOES HERE  " x
     echo -e '\E[33;40m'"\033[1m"
     echo "This is a "${side1,,}" order."
     echo "You entered (read carefully):"
@@ -615,7 +617,7 @@ body1="{\"key\":\"$skey1\",\"nonce\":\"$nonce1\",\"listingCurrency\":\"$market\"
     mysig=$(echo -n "$body1" | openssl dgst -sha512 -hmac "$skey2")
   mysig1="${mysig:9}"
     
-    (curl -s --request POST \
+    (curl --request POST \
     --url $urleq \
      -H "Content-Type: application/json" \
      -H "Hash: $mysig1" \
@@ -841,7 +843,7 @@ read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; ref
     urleq="https://stakecube.io/api/v2/exchange/spot/myOpenOrder"
     signature3=$(printf "nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
        
-    (curl --request GET \
+    (curl -s --request GET \
     --url https://stakecube.io/api/v2/exchange/spot/myOpenOrder?nonce=$nonce1\&signature=$signature3 \
     -H 'Content-Type: application/x-www-form-urlencoded' \
     -H "X-API-KEY: $skey1" | jq )
@@ -1027,6 +1029,7 @@ read -p "which Reference Currency would you like [BTC]:" referenceCurrency ; ref
 
     fi
     printf "\n" 
+    
 #####  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     elif [[ "$m" == "10" ]]; then
     ## Miscellaneous
@@ -1044,9 +1047,8 @@ echo "SouthXchange New Address   = 4"
 echo "Epoch Date Converter       = 5"
 echo "My address list            = 6"
 echo "SouthXchange withdraw      = 7"
-echo "StakeCube My Order History = 8"
 echo
-read -p "Type a number [0, 1, 2, 3, 4, 5, 6, 7, 8] :" x
+read -p "Type a number [0, 1, 2, 3, 4, 5, 6, 7] :" x
 
    case $x in
     0) echo -ne '\n' | showMenu
@@ -1054,7 +1056,7 @@ read -p "Type a number [0, 1, 2, 3, 4, 5, 6, 7, 8] :" x
     i=0   
     ;;
     1) read -p "Enter Market [BTC-ONION]:" market ; market=${market:-BTC-ONION}
-       (curl --request GET https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq )
+       (curl -s --request GET https://stakecube.io/api/v2/exchange/spot/arbitrageInfo?ticker=ONION | jq )
     i=0
     ;;
     2) skey1=$ksvalue2
@@ -1139,7 +1141,7 @@ read -p "Type a number [0, 1, 2, 3, 4, 5, 6, 7, 8] :" x
        echo -e '\E[32;40m'"\033[1m"
        signature3=$(printf "market=$market&limit=100&nonce=$nonce1" | openssl dgst -sha256 -hmac "$skey2"  | sed 's/.*= //')
        mysig2=$signature1$mysig
-       (curl -H "Content-Type: application/x-www-form-urlencoded" -H "X-API-KEY: $skey1" \
+       (curl -s -H "Content-Type: application/x-www-form-urlencoded" -H "X-API-KEY: $skey1" \
        --request GET "$ENDPOINT2""$EXCHSPOTEP"market=$market\&limit=100\&nonce="$nonce1"\&signature="$signature3" | jq )
     i=0
     ;;
@@ -1190,9 +1192,29 @@ read -p "Type a number [1, 2, 3] :" x
   esac
 done
 echo -e '\E[32;40m'"\033[1m"  
-#echo $ENDPOINT  
-#echo $ksvalue
+
  printf "\n"     
+ # fi
+  
+##################### CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC ##########################
+ elif [[ "$m" == "12" ]]; then
+    ## testing
+ echo "12"   
+ if [[ "$ENDPOINT" == "$ENDPOINT1" ]]; then
+ # echo -e '\E[34;40m'"\033[1m"
+ 
+     echo -e '\E[33;40m'"\033[1m"
+    
+    elif [[ "$ENDPOINT" == "$ENDPOINT2" ]]; then
+     echo -e '\E[34;40m'"\033[1m"
+        
+    elif [[ "$ENDPOINT" == "$ENDPOINT3" ]]; then
+     echo -e '\E[34;40m'"\033[1m"
+    
+        
+    printf "\n"
+    fi
+    printf "\n"
   fi
   showMenu
   m=$?
@@ -1216,12 +1238,6 @@ done
 # D. Familiarize yourself with https://tradeogre.com/help/api options and output.                                                  #
 # E. WARNING: Buy and Sell ONLY show ONION price (not bid or ask)                                                                  #                                                                                                                             # F.                                                                                                                               #
 ####################################################################################################################################
-
-####################################################################################################################################
-# ChangeLog -                                                                                                                      #
-# 05/31/2022 - Change TradeOgre to BUY or SELL. (#3)
-# 
-
 
 clear
 exit 0;
